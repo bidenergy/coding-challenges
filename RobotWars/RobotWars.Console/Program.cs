@@ -18,6 +18,7 @@ namespace RobotWars.Console
 
             while (true)
             {
+                System.Console.Write(">");
                 string input = System.Console.ReadLine();
 
                 // Check if quitting
@@ -26,17 +27,25 @@ namespace RobotWars.Console
                     return;
                 }
 
+                // Process input
                 var result = game.ProcessInstruction(input);
-                if (result.Successful)
+                if (!result.Successful)
                 {
-                    if (result.SuccessMessage != null)
-                    {
-                        System.Console.WriteLine(result.SuccessMessage);
-                    }
+                    System.Console.WriteLine(result.FailureMessage);
+                }
+
+                // Output robot state
+                var robots = game.GetRobots();
+                if (robots == null || robots.Length == 0)
+                {
+                    System.Console.WriteLine("[EMPTY]");
                 }
                 else
                 {
-                    System.Console.WriteLine(result.FailureMessage);
+                    foreach (var robot in robots)
+                    {
+                        System.Console.WriteLine(robot.ToString());
+                    }
                 }
             }
         }

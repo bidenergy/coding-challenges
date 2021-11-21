@@ -7,7 +7,7 @@ namespace RobotWars.Test
 {
     public class RobotWarsGameTests
     {
-        private RobotWarsGame _game;
+        private IRobotWarsGame _game;
 
         [SetUp]
         public void SetUp()
@@ -28,7 +28,7 @@ namespace RobotWars.Test
         [Test]
         public void Start_InvalidInput_NotInitialized()
         {
-            var result = _game.ProcessInstruction("5");
+            var result = ((IRobotWarsGame)_game).ProcessInstruction("5");
 
             Assert.That(result.Successful, Is.False);
             Assert.That(result.FailureMessage, Is.Not.Null);
@@ -41,50 +41,68 @@ namespace RobotWars.Test
         [Test]
         public void PlaySampleInput_Works()
         {
-            var result = _game.ProcessInstruction("5 4");
+            var result = ((IRobotWarsGame)_game).ProcessInstruction("5 4");
 
             Assert.That(result.Successful, Is.True);
-            Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddRobot));
             Assert.That(_game.ArenaWidth, Is.EqualTo(5));
             Assert.That(_game.ArenaHeight, Is.EqualTo(4));
+            CollectionAssert.IsEmpty(_game.GetRobots());
 
 
-            result = _game.ProcessInstruction("1 2 N");
+            result = ((IRobotWarsGame)_game).ProcessInstruction("1 2 N");
 
             Assert.That(result.Successful, Is.True);
-            Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot (1, 2, RobotHeading.North)));
+            CollectionAssert.AreEqual(
+                new[] {
+                    new Robot(1, 2, RobotHeading.North)
+                },
+                _game.GetRobots()
+            );
 
 
-            result = _game.ProcessInstruction("LMLMLMLMM");
+            result = ((IRobotWarsGame)_game).ProcessInstruction("LMLMLMLMM");
 
             Assert.That(result.Successful, Is.True);
-            Assert.That(result.SuccessMessage, Is.EqualTo("1 3 N"));
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot(1, 3, RobotHeading.North)));
+            CollectionAssert.AreEqual(
+                new[] {
+                    new Robot(1, 3, RobotHeading.North)
+                },
+                _game.GetRobots()
+            );
 
 
-            result = _game.ProcessInstruction("3 3 E");
+            result = ((IRobotWarsGame)_game).ProcessInstruction("3 3 E");
 
             Assert.That(result.Successful, Is.True);
-            Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot(3, 3, RobotHeading.East)));
+            CollectionAssert.AreEqual(
+                new[] {
+                    new Robot(1, 3, RobotHeading.North),
+                    new Robot(3, 3, RobotHeading.East)
+                },
+                _game.GetRobots()
+            );
 
 
-            result = _game.ProcessInstruction("MMRMMRMRRM");
+            result = ((IRobotWarsGame)_game).ProcessInstruction("MMRMMRMRRM");
 
             Assert.That(result.Successful, Is.True);
-            Assert.That(result.SuccessMessage, Is.EqualTo("5 1 E"));
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot(5, 1, RobotHeading.East)));
+            CollectionAssert.AreEqual(
+                new[] {
+                    new Robot(1, 3, RobotHeading.North),
+                    new Robot(5, 1, RobotHeading.East)
+                },
+                _game.GetRobots()
+            );
         }
     }
 }

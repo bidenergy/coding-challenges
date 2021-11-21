@@ -2,6 +2,7 @@
 using RobotWars.Logic.Parsing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RobotWars.Logic
 {
@@ -28,24 +29,21 @@ namespace RobotWars.Logic
 
         public GameStatus GameStatus => _gameStatus;
 
-        public Robot SelectedRobot
-        {
-            get
-            {
-                if (_robots.Count == 0)
-                    return null;
-                else
-                    return _robots.Peek();
-            }
-        }
-
         public RobotWarsGame(IInputParser inputParser, IRobotNavigator robotNavigator)
         {
             _inputParser = inputParser;
             _robotNavigator = robotNavigator;
         }
 
-        public InstructionProcssingResult ProcessInstruction(string instruction)
+        public Robot[] GetRobots()
+        {
+            return _robots
+                .ToArray()
+                .Reverse()
+                .ToArray();
+        }
+
+        InstructionProcssingResult IRobotWarsGame.ProcessInstruction(string instruction)
         {
             switch (_gameStatus)
             {
@@ -55,9 +53,9 @@ namespace RobotWars.Logic
                     return ProcessAddRobotInstruction(instruction);
                 case GameStatus.MoveRobot:
                     return ProcessMoveRobotInstruction(instruction);
+                default:
+                    throw new ApplicationException($"Unsupported game status {_gameStatus}");
             }
-
-            throw new NotImplementedException();
         }
 
         private InstructionProcssingResult ProcessGameStartInstruction(string instruction)
@@ -84,7 +82,7 @@ namespace RobotWars.Logic
             var heading = parsed.RobotHeading;
 
             var robot = new Robot(column, row, heading);
-            
+
             _robots.Push(robot);
 
             _gameStatus = GameStatus.MoveRobot;
@@ -111,10 +109,7 @@ namespace RobotWars.Logic
 
             _gameStatus = GameStatus.AddRobot;
 
-            var robotForOutputMessage = _robots.Peek();
-            var successMessasge = $"{robotForOutputMessage.Column} {robotForOutputMessage.Row} {robotForOutputMessage.Heading.ToCodeString()}";
-
-            return InstructionProcssingResult.Success(successMessasge);
+            return InstructionProcssingResult.Success();
         }
     }
 }

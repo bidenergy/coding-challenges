@@ -12,5 +12,10 @@
             Row = row;
             Heading = heading;
         }
+
+        public override string ToString()
+        {
+            return $"{Column} {Row} {Heading.ToCodeString()}";
+        }
     }
 }

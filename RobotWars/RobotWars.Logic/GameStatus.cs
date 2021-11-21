@@ -3,7 +3,7 @@
     public enum GameStatus
     {
         Start,
-        AddOrSelectRobot,
+        AddRobot,
         MoveRobot
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -42,7 +41,7 @@ namespace RobotWars.Logic.Parsing
             };
         }
 
-        public InputResultRobotAddOrSelect ParseRobotAddOrSelectInput(string input)
+        public InputResultRobotAddOrSelect ParseRobotAddInput(string input)
         {
             const string inputInstruction = "Specify robot position as (column<int> row<int> heading<N,W,S,E>). Eg: 1 2 N";
 

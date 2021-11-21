@@ -4,7 +4,7 @@
     {
         bool IsQuit(string input);
         InputResultArenaInit ParseArenaInitInput(string input);
-        InputResultRobotAddOrSelect ParseRobotAddOrSelectInput(string input);
+        InputResultRobotAddOrSelect ParseRobotAddInput(string input);
         InputResultRobotMove ParseRobotMoveInput(string input);
     }
 }

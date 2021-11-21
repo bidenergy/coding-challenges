@@ -9,26 +9,26 @@ namespace RobotWars.Test
     public class RobotNavigatorTest
     {
         [TestCaseSource(nameof(PlanMoveTestCases))]
-        public PlanMoveResult PlanMove(Position position, RobotHeading heading, RobotMove move)
+        public PlanMoveResult PlanMove(Robot robot, RobotMove move)
         {
             var navigator = new RobotNavigator();
-            return navigator.PlanMove(position, heading, move);
+            return navigator.PlanMove(robot, move);
         }
 
         private static IEnumerable<TestCaseData> PlanMoveTestCases()
         {
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.North, RobotMove.LeftRotate)
-                .Returns(new PlanMoveResult { MovedPosition = false, Position = new Position(1, 1), Heading = RobotHeading.West});
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.North, RobotMove.RightRotate)
-                .Returns(new PlanMoveResult { MovedPosition = false, Position = new Position(1, 1), Heading = RobotHeading.East });
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.North), RobotMove.LeftRotate)
+                .Returns(new PlanMoveResult { MovedPosition = false, Robot = new Robot(1, 1, RobotHeading.West) });
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.North), RobotMove.RightRotate)
+                .Returns(new PlanMoveResult { MovedPosition = false, Robot = new Robot(1, 1, RobotHeading.East) });
 
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.North, RobotMove.MoveOneStep)
-                .Returns(new PlanMoveResult { MovedPosition = true, Position = new Position(1, 2), Heading = RobotHeading.North });
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.North), RobotMove.MoveOneStep)
+                .Returns(new PlanMoveResult { MovedPosition = true, Robot = new Robot(1, 2, RobotHeading.North) });
             
-            yield return new TestCaseData(new Position(0, 0), RobotHeading.West, RobotMove.MoveOneStep)
-                .Returns(new PlanMoveResult { MovedPosition = true, Position = new Position(-1, 0), Heading = RobotHeading.West });
-            yield return new TestCaseData(new Position(0, 0), RobotHeading.South, RobotMove.MoveOneStep)
-                .Returns(new PlanMoveResult { MovedPosition = true, Position = new Position(0, -1), Heading = RobotHeading.South });
+            yield return new TestCaseData(new Robot(0, 0, RobotHeading.West), RobotMove.MoveOneStep)
+                .Returns(new PlanMoveResult { MovedPosition = true, Robot = new Robot(-1, 0, RobotHeading.West) });
+            yield return new TestCaseData(new Robot(0, 0, RobotHeading.South), RobotMove.MoveOneStep)
+                .Returns(new PlanMoveResult { MovedPosition = true, Robot = new Robot(0, -1, RobotHeading.South) });
         }
 
         [TestCase(RobotHeading.North, RobotMove.MoveOneStep, ExpectedResult = RobotHeading.North)]
@@ -47,27 +47,27 @@ namespace RobotWars.Test
         }
 
         [TestCaseSource(nameof(MoveTestCases))]
-        public Position Move(Position position, RobotHeading heading, RobotMove move)
+        public Robot Move(Robot robot, RobotMove move)
         {
             var navigator = new RobotNavigator();
-            return navigator.Move(position, heading, move);
+            return navigator.Move(robot, move);
         }
 
         private static IEnumerable<TestCaseData> MoveTestCases()
         {
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.North, RobotMove.LeftRotate)
-                .Returns(new Position(1, 1));
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.North, RobotMove.RightRotate)
-                .Returns(new Position(1, 1));
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.North), RobotMove.LeftRotate)
+                .Returns(new Robot(1, 1, RobotHeading.North));
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.North), RobotMove.RightRotate)
+                .Returns(new Robot(1, 1, RobotHeading.North));
 
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.North, RobotMove.MoveOneStep)
-                .Returns(new Position(1, 2));
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.West, RobotMove.MoveOneStep)
-                .Returns(new Position(0, 1));
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.South, RobotMove.MoveOneStep)
-                .Returns(new Position(1, 0));
-            yield return new TestCaseData(new Position(1, 1), RobotHeading.East, RobotMove.MoveOneStep)
-                .Returns(new Position(2, 1));
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.North), RobotMove.MoveOneStep)
+                .Returns(new Robot(1, 2, RobotHeading.North));
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.West), RobotMove.MoveOneStep)
+                .Returns(new Robot(0, 1, RobotHeading.West));
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.South), RobotMove.MoveOneStep)
+                .Returns(new Robot(1, 0, RobotHeading.South));
+            yield return new TestCaseData(new Robot(1, 1, RobotHeading.East), RobotMove.MoveOneStep)
+                .Returns(new Robot(2, 1, RobotHeading.East));
         }
     }
 }

@@ -2,7 +2,8 @@
 {
     public interface IRobotNavigator
     {
-        PlanMoveResult PlanMove(Position position, RobotHeading robotHeading, RobotMove move);
+        PlanMoveResult PlanMove(Robot robot, RobotMove move);
+        Robot Move(Robot robot, RobotMove move);
         RobotHeading Rotate(RobotHeading robotHeading, RobotMove move);
     }
 }

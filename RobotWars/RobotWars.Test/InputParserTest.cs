@@ -52,9 +52,9 @@ namespace RobotWars.Test
         [TestCase("2 1 W", false, 2, 1, RobotHeading.West)]
         [TestCase("2 1 S", false, 2, 1, RobotHeading.South)]
         [TestCase("2 1 E", false, 2, 1, RobotHeading.East)]
-        public void ParseRobotAddOrSelect(string input, bool expectParseError, int expectColumn, int expectRow, RobotHeading? expectHeading)
+        public void ParseRobotAdd(string input, bool expectParseError, int expectColumn, int expectRow, RobotHeading? expectHeading)
         {
-            var result = _parser.ParseRobotAddOrSelectInput(input);
+            var result = _parser.ParseRobotAddInput(input);
 
             if (expectParseError)
             {

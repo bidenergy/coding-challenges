@@ -46,7 +46,7 @@ namespace RobotWars.Test
             Assert.That(result.Successful, Is.True);
             Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
-            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddRobot));
             Assert.That(_game.ArenaWidth, Is.EqualTo(5));
             Assert.That(_game.ArenaHeight, Is.EqualTo(4));
 
@@ -57,7 +57,7 @@ namespace RobotWars.Test
             Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 1, Row: 2, Heading: RobotHeading.North)));
+            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot (1, 2, RobotHeading.North)));
 
 
             result = _game.ProcessInstruction("LMLMLMLMM");
@@ -65,8 +65,8 @@ namespace RobotWars.Test
             Assert.That(result.Successful, Is.True);
             Assert.That(result.SuccessMessage, Is.EqualTo("1 3 N"));
             Assert.That(result.FailureMessage, Is.Null);
-            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 1, Row: 3, Heading: RobotHeading.North)));
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddRobot));
+            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot(1, 3, RobotHeading.North)));
 
 
             result = _game.ProcessInstruction("3 3 E");
@@ -75,7 +75,7 @@ namespace RobotWars.Test
             Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 3, Row: 3, Heading: RobotHeading.East)));
+            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot(3, 3, RobotHeading.East)));
 
 
             result = _game.ProcessInstruction("MMRMMRMRRM");
@@ -83,8 +83,8 @@ namespace RobotWars.Test
             Assert.That(result.Successful, Is.True);
             Assert.That(result.SuccessMessage, Is.EqualTo("5 1 E"));
             Assert.That(result.FailureMessage, Is.Null);
-            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 5, Row: 1, Heading: RobotHeading.East)));
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddRobot));
+            Assert.That(_game.SelectedRobot, Is.EqualTo(new Robot(5, 1, RobotHeading.East)));
         }
     }
 }

@@ -5,23 +5,6 @@ using System.Collections.Generic;
 
 namespace RobotWars.Logic
 {
-    public record Position
-    {
-        public int Column { get; set; }
-        public int Row { get; set; }
-
-        public Position(int column, int row)
-        {
-            Column = column;
-            Row = row;
-        }
-    }
-
-    public class Robot
-    {
-        public RobotHeading Heading { get; set; }
-    }
-
     public class RobotWarsGame : IRobotWarsGame
     {
         private readonly IInputParser _inputParser;
@@ -31,9 +14,7 @@ namespace RobotWars.Logic
 
         private GameStatus _gameStatus = GameStatus.Start;
 
-        private Position _selectedPosition;
-
-        private Dictionary<Position, Robot> _robots = new Dictionary<Position, Robot>();
+        private Stack<Robot> _robots = new Stack<Robot>();
 
         private int _arenaWidth = 0;
 
@@ -47,17 +28,14 @@ namespace RobotWars.Logic
 
         public GameStatus GameStatus => _gameStatus;
 
-        public (int column, int row, RobotHeading robotHeading)? SelectedRobot
+        public Robot SelectedRobot
         {
             get
             {
-                if (_selectedPosition != null && _robots.TryGetValue(_selectedPosition, out Robot robot))
-                {
-                    return (_selectedPosition.Column, _selectedPosition.Row, robot.Heading);
-                } else
-                {
+                if (_robots.Count == 0)
                     return null;
-                }
+                else
+                    return _robots.Peek();
             }
         }
 
@@ -73,8 +51,8 @@ namespace RobotWars.Logic
             {
                 case GameStatus.Start:
                     return ProcessGameStartInstruction(instruction);
-                case GameStatus.AddOrSelectRobot:
-                    return ProcessAddOrSelectRobotInstruction(instruction);
+                case GameStatus.AddRobot:
+                    return ProcessAddRobotInstruction(instruction);
                 case GameStatus.MoveRobot:
                     return ProcessMoveRobotInstruction(instruction);
             }
@@ -91,14 +69,13 @@ namespace RobotWars.Logic
             _arenaWidth = parsed.Width;
             _arenaHeight = parsed.Height;
 
-            _gameStatus = GameStatus.AddOrSelectRobot;
-
+            _gameStatus = GameStatus.AddRobot;
             return InstructionProcssingResult.Success();
         }
 
-        private InstructionProcssingResult ProcessAddOrSelectRobotInstruction(string instruction)
+        private InstructionProcssingResult ProcessAddRobotInstruction(string instruction)
         {
-            var parsed = _inputParser.ParseRobotAddOrSelectInput(instruction);
+            var parsed = _inputParser.ParseRobotAddInput(instruction);
             if (parsed.ParseErrorMessage != null)
                 return InstructionProcssingResult.InvalidInput(parsed.ParseErrorMessage);
 
@@ -106,14 +83,9 @@ namespace RobotWars.Logic
             var column = parsed.Column;
             var heading = parsed.RobotHeading;
 
-            var position = new Position(column, row);
-
-            if (!_robots.ContainsKey(position))
-            {
-                var robot = new Robot { Heading = heading };
-                _robots.Add(position, robot);
-                _selectedPosition = position; 
-            }
+            var robot = new Robot(column, row, heading);
+            
+            _robots.Push(robot);
 
             _gameStatus = GameStatus.MoveRobot;
 
@@ -130,30 +102,17 @@ namespace RobotWars.Logic
 
             foreach (var move in moves)
             {
-                var robot = _robots[_selectedPosition];
+                var robot = _robots.Pop();
 
-                var planMoveResult = _robotNavigator.PlanMove(_selectedPosition, robot.Heading, move);
-                
-                if (planMoveResult.MovedPosition)
-                {
-                    // Update robot position
-                    _robots.Remove(_selectedPosition);
-                    _robots.Add(planMoveResult.Position, robot);
-                    _selectedPosition = planMoveResult.Position;
-                }
-                else
-                {
-                    // Update robot heading
-                    robot.Heading = planMoveResult.Heading;
-                }
+                var planMoveResult = _robotNavigator.PlanMove(robot, move);
+
+                _robots.Push(planMoveResult.Robot);
             }
 
-            _gameStatus = GameStatus.AddOrSelectRobot;
+            _gameStatus = GameStatus.AddRobot;
 
-            var position = _selectedPosition;
-            var selectedRobot = _robots[_selectedPosition];
-
-            var successMessasge = $"{position.Column} {position.Row} {selectedRobot.Heading.ToCodeString()}";
+            var robotForOutputMessage = _robots.Peek();
+            var successMessasge = $"{robotForOutputMessage.Column} {robotForOutputMessage.Row} {robotForOutputMessage.Heading.ToCodeString()}";
 
             return InstructionProcssingResult.Success(successMessasge);
         }

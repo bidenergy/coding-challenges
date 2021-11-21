@@ -2,44 +2,45 @@
 {
     public class RobotNavigator : IRobotNavigator
     {
-        public PlanMoveResult PlanMove(Position position, RobotHeading robotHeading, RobotMove move)
+        public PlanMoveResult PlanMove(Robot robot, RobotMove move)
         {
             if (move == RobotMove.LeftRotate || move == RobotMove.RightRotate)
             {
-                var nextHeading = Rotate(robotHeading, move);
-                return PlanMoveResult.RotateResult(position, nextHeading);
+                var nextHeading = Rotate(robot.Heading, move);
+                var updatedRobot = robot with { Heading = nextHeading };
+                return PlanMoveResult.RotateResult(updatedRobot);
             }
             else
             {
-                var nextPosition = Move(position, robotHeading, move);
-                return PlanMoveResult.MoveResult(nextPosition, robotHeading);
+                var updatedRobot = Move(robot, move);
+                return PlanMoveResult.MoveResult(updatedRobot);
             }
         }
 
-        public Position Move(Position position, RobotHeading robotHeading, RobotMove move)
+        public Robot Move(Robot robot, RobotMove move)
         {
             if (move == RobotMove.LeftRotate || move == RobotMove.RightRotate)
-                return position;
+                return robot;
 
-            Position nextPosition = position;
+            Robot updatedRobot = robot;
 
-            switch (robotHeading)
+            switch (robot.Heading)
             {
                 case RobotHeading.North:
-                    nextPosition = position with { Row = position.Row + 1 };
+                    updatedRobot = robot with { Row = robot.Row + 1 };
                     break;
                 case RobotHeading.West:
-                    nextPosition = position with { Column = position.Column - 1 };
+                    updatedRobot = robot with { Column = robot.Column - 1 };
                     break;
                 case RobotHeading.South:
-                    nextPosition = position with { Row = position.Row - 1 };
+                    updatedRobot = robot with { Row = robot.Row - 1 };
                     break;
                 case RobotHeading.East:
-                    nextPosition = position with { Column = position.Column + 1 };
+                    updatedRobot = robot with { Column = robot.Column + 1 };
                     break;
             }
 
-            return nextPosition;
+            return updatedRobot;
         }
 
         public RobotHeading Rotate(RobotHeading robotHeading, RobotMove move)

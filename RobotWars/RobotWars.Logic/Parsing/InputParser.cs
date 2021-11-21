@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace RobotWars.Logic.Parsing
@@ -61,6 +63,45 @@ namespace RobotWars.Logic.Parsing
             catch (Exception ex)
             {
                 return InputResultRobotAddOrSelect.Invalid($"Error parsing input: {ex.Message}! {inputInstruction}");
+            }
+        }
+
+        public InputResultRobotMove ParseRobotMoveInput(string input)
+        {
+            const string inputInstruction = "Specify robot move instruction as a series of L (Left Rotate) R (Right Rotate) or M (Move Cell). Eg: LMLRM";
+
+            try
+            {
+                var match = Regex.Match(input, @"^\s*([LRM]+)\s*$", RegexOptions.IgnoreCase);
+                if (!match.Success)
+                {
+                    return InputResultRobotMove.Invalid($"Invalid input! {inputInstruction}");
+                }
+
+                var movesInput = match.Groups[1].Value;
+
+                var moves = movesInput.ToUpperInvariant().ToCharArray()
+                    .Select(c =>
+                    {
+                        switch (c)
+                        {
+                            case 'L':
+                                return RobotMove.LeftRotate;
+                            case 'R':
+                                return RobotMove.RightRotate;
+                            case 'M':
+                                return RobotMove.MoveOneStep;
+                            default:
+                                throw new ApplicationException($"Unsupported robot move {c} specified");
+                        }
+                    })
+                    .ToArray();
+
+                return new InputResultRobotMove { RobotMoves = moves };
+            }
+            catch (Exception ex)
+            {
+                return InputResultRobotMove.Invalid($"Error parsing input: {ex.Message}! {inputInstruction}");
             }
         }
     }

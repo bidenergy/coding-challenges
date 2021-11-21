@@ -2,9 +2,9 @@
 {
     public enum RobotHeading
     {
-        North,
-        West,
-        South,
-        East,
+        North = 'N',
+        West = 'W',
+        South = 'S',
+        East = 'E',
     }
 }

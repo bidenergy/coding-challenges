@@ -52,7 +52,7 @@ namespace RobotWars.Test
         [TestCase("2 1 W", false, 2, 1, RobotHeading.West)]
         [TestCase("2 1 S", false, 2, 1, RobotHeading.South)]
         [TestCase("2 1 E", false, 2, 1, RobotHeading.East)]
-        public void ParseRoboAddOrSelect(string input, bool expectParseError, int expectColumn, int expectRow, RobotHeading? expectHeading)
+        public void ParseRobotAddOrSelect(string input, bool expectParseError, int expectColumn, int expectRow, RobotHeading? expectHeading)
         {
             var result = _parser.ParseRobotAddOrSelectInput(input);
 
@@ -66,6 +66,24 @@ namespace RobotWars.Test
                 Assert.That(result.Column, Is.EqualTo(expectColumn));
                 Assert.That(result.Row, Is.EqualTo(expectRow));
                 Assert.That(result.RobotHeading, Is.EqualTo(expectHeading));
+            }
+        }
+
+        [TestCase("", true, null)]
+        [TestCase("Z", true, null)]
+        [TestCase("LRM", false, new[] { RobotMove.LeftRotate, RobotMove.RightRotate, RobotMove.MoveOneStep })]
+        public void ParseRobotMove(string input, bool expectParseError, RobotMove[] expectMoves)
+        {
+            var result = _parser.ParseRobotMoveInput(input);
+
+            if (expectParseError)
+            {
+                Assert.That(result.ParseErrorMessage, Is.Not.Null);
+            }
+            else
+            {
+                Assert.That(result.ParseErrorMessage, Is.Null);
+                CollectionAssert.AreEqual(expectMoves, result.RobotMoves);
             }
         }
     }

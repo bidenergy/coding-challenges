@@ -1,4 +1,5 @@
-﻿using RobotWars.Logic.Parsing;
+﻿using RobotWars.Logic.Navigation;
+using RobotWars.Logic.Parsing;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,12 @@ namespace RobotWars.Logic
     {
         public int Column { get; set; }
         public int Row { get; set; }
+
+        public Position(int column, int row)
+        {
+            Column = column;
+            Row = row;
+        }
     }
 
     public class Robot
@@ -18,6 +25,7 @@ namespace RobotWars.Logic
     public class RobotWarsGame : IRobotWarsGame
     {
         private readonly IInputParser _inputParser;
+        private readonly IRobotNavigator _robotNavigator;
 
         #region Game State variables
 
@@ -53,9 +61,10 @@ namespace RobotWars.Logic
             }
         }
 
-        public RobotWarsGame(IInputParser inputParser)
+        public RobotWarsGame(IInputParser inputParser, IRobotNavigator robotNavigator)
         {
             _inputParser = inputParser;
+            _robotNavigator = robotNavigator;
         }
 
         public InstructionProcssingResult ProcessInstruction(string instruction)
@@ -66,6 +75,8 @@ namespace RobotWars.Logic
                     return ProcessGameStartInstruction(instruction);
                 case GameStatus.AddOrSelectRobot:
                     return ProcessAddOrSelectRobotInstruction(instruction);
+                case GameStatus.MoveRobot:
+                    return ProcessMoveRobotInstruction(instruction);
             }
 
             throw new NotImplementedException();
@@ -95,7 +106,7 @@ namespace RobotWars.Logic
             var column = parsed.Column;
             var heading = parsed.RobotHeading;
 
-            var position = new Position { Column = column, Row = row };
+            var position = new Position(column, row);
 
             if (!_robots.ContainsKey(position))
             {
@@ -107,6 +118,44 @@ namespace RobotWars.Logic
             _gameStatus = GameStatus.MoveRobot;
 
             return InstructionProcssingResult.Success();
+        }
+
+        private InstructionProcssingResult ProcessMoveRobotInstruction(string instruction)
+        {
+            var parsed = _inputParser.ParseRobotMoveInput(instruction);
+            if (parsed.ParseErrorMessage != null)
+                return InstructionProcssingResult.InvalidInput(parsed.ParseErrorMessage);
+
+            var moves = parsed.RobotMoves;
+
+            foreach (var move in moves)
+            {
+                var robot = _robots[_selectedPosition];
+
+                var planMoveResult = _robotNavigator.PlanMove(_selectedPosition, robot.Heading, move);
+                
+                if (planMoveResult.MovedPosition)
+                {
+                    // Update robot position
+                    _robots.Remove(_selectedPosition);
+                    _robots.Add(planMoveResult.Position, robot);
+                    _selectedPosition = planMoveResult.Position;
+                }
+                else
+                {
+                    // Update robot heading
+                    robot.Heading = planMoveResult.Heading;
+                }
+            }
+
+            _gameStatus = GameStatus.AddOrSelectRobot;
+
+            var position = _selectedPosition;
+            var selectedRobot = _robots[_selectedPosition];
+
+            var successMessasge = $"{position.Column} {position.Row} {selectedRobot.Heading.ToCodeString()}";
+
+            return InstructionProcssingResult.Success(successMessasge);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace RobotWars.Logic
+﻿using System;
+
+namespace RobotWars.Logic
 {
     public record InstructionProcssingResult
     {
@@ -20,6 +22,15 @@
             return new InstructionProcssingResult
             {
                 Successful = true
+            };
+        }
+
+        internal static InstructionProcssingResult Success(string successMessasge)
+        {
+            return new InstructionProcssingResult
+            {
+                Successful = true,
+                SuccessMessage = successMessasge
             };
         }
     }

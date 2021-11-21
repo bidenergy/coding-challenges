@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RobotWars.Logic;
+using RobotWars.Logic.Navigation;
 using RobotWars.Logic.Parsing;
 
 namespace RobotWars.Console
@@ -50,6 +51,7 @@ namespace RobotWars.Console
         {
             svc.AddSingleton<IInputParser, InputParser>();
             svc.AddSingleton<IRobotWarsGame, RobotWarsGame>();
+            svc.AddSingleton<IRobotNavigator, RobotNavigator>();
         }
     }
 }

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using RobotWars.Logic;
+using RobotWars.Logic.Navigation;
 using RobotWars.Logic.Parsing;
 
 namespace RobotWars.Test
@@ -12,7 +13,8 @@ namespace RobotWars.Test
         public void SetUp()
         {
             var inputParser = new InputParser();
-            _game = new RobotWarsGame(inputParser);
+            var robotNavigator = new RobotNavigator();
+            _game = new RobotWarsGame(inputParser, robotNavigator);
         }
 
         [Test]
@@ -56,6 +58,33 @@ namespace RobotWars.Test
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
             Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 1, Row: 2, Heading: RobotHeading.North)));
+
+
+            result = _game.ProcessInstruction("LMLMLMLMM");
+
+            Assert.That(result.Successful, Is.True);
+            Assert.That(result.SuccessMessage, Is.EqualTo("1 3 N"));
+            Assert.That(result.FailureMessage, Is.Null);
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
+            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 1, Row: 3, Heading: RobotHeading.North)));
+
+
+            result = _game.ProcessInstruction("3 3 E");
+
+            Assert.That(result.Successful, Is.True);
+            Assert.That(result.SuccessMessage, Is.Null);
+            Assert.That(result.FailureMessage, Is.Null);
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
+            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 3, Row: 3, Heading: RobotHeading.East)));
+
+
+            result = _game.ProcessInstruction("MMRMMRMRRM");
+
+            Assert.That(result.Successful, Is.True);
+            Assert.That(result.SuccessMessage, Is.EqualTo("5 1 E"));
+            Assert.That(result.FailureMessage, Is.Null);
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
+            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 5, Row: 1, Heading: RobotHeading.East)));
         }
     }
 }

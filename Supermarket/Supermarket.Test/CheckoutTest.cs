@@ -20,12 +20,30 @@ namespace Supermarket.Test
         }
 
         [Test]
-        public void Test()
+        public void NoScan()
+        {
+            var price = _checkout.GetTotalPrice();
+
+            Assert.That(price, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ScanOnce()
         {
             _checkout.Scan("A");
             var price = _checkout.GetTotalPrice();
 
             Assert.That(price, Is.EqualTo(50));
+        }
+
+        [Test]
+        public void ScanSameProductTwice()
+        {
+            _checkout.Scan("A");
+            _checkout.Scan("A");
+            var price = _checkout.GetTotalPrice();
+
+            Assert.That(price, Is.EqualTo(100));
         }
     }
 }

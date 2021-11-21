@@ -23,7 +23,7 @@ namespace Supermarket.Logic
                 if (_cart.TryGetValue(product.Sku, out CartItem cartItem))
                 {
                     // Increment quantity
-
+                    cartItem.Quantity += 1;
                 }
                 else
                 {

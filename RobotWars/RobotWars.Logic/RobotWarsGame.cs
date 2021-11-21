@@ -1,8 +1,20 @@
 ﻿using RobotWars.Logic.Parsing;
 using System;
+using System.Collections.Generic;
 
 namespace RobotWars.Logic
 {
+    public record Position
+    {
+        public int Column { get; set; }
+        public int Row { get; set; }
+    }
+
+    public class Robot
+    {
+        public RobotHeading Heading { get; set; }
+    }
+
     public class RobotWarsGame : IRobotWarsGame
     {
         private readonly IInputParser _inputParser;
@@ -11,19 +23,35 @@ namespace RobotWars.Logic
 
         private GameStatus _gameStatus = GameStatus.Start;
 
-        private ArenaCell[,] _arena;
+        private Position _selectedPosition;
 
-        private SelectedRobot _selectedRobot;
+        private Dictionary<Position, Robot> _robots = new Dictionary<Position, Robot>();
+
+        private int _arenaWidth = 0;
+
+        private int _arenaHeight = 0;
 
         #endregion
 
-        public int ArenaWidth => _arena?.GetLength(0) ?? 0;
+        public int ArenaWidth => _arenaWidth;
 
-        public int ArenaHeight => _arena?.GetLength(1) ?? 0;
+        public int ArenaHeight => _arenaHeight;
 
         public GameStatus GameStatus => _gameStatus;
 
-        public SelectedRobot SelectedRobot => _selectedRobot;
+        public (int column, int row, RobotHeading robotHeading)? SelectedRobot
+        {
+            get
+            {
+                if (_selectedPosition != null && _robots.TryGetValue(_selectedPosition, out Robot robot))
+                {
+                    return (_selectedPosition.Column, _selectedPosition.Row, robot.Heading);
+                } else
+                {
+                    return null;
+                }
+            }
+        }
 
         public RobotWarsGame(IInputParser inputParser)
         {
@@ -49,7 +77,8 @@ namespace RobotWars.Logic
             if (parsed.ParseErrorMessage != null)
                 return InstructionProcssingResult.InvalidInput(parsed.ParseErrorMessage);
 
-            _arena = new ArenaCell[parsed.Width, parsed.Height];
+            _arenaWidth = parsed.Width;
+            _arenaHeight = parsed.Height;
 
             _gameStatus = GameStatus.AddOrSelectRobot;
 
@@ -66,12 +95,13 @@ namespace RobotWars.Logic
             var column = parsed.Column;
             var heading = parsed.RobotHeading;
 
-            var arenaCell = _arena[row, column];
+            var position = new Position { Column = column, Row = row };
 
-            if (arenaCell == null)
+            if (!_robots.ContainsKey(position))
             {
-                _arena[row, column] = new ArenaCell(heading);
-                _selectedRobot = new SelectedRobot { Row = row, Column = column, Heading = heading };
+                var robot = new Robot { Heading = heading };
+                _robots.Add(position, robot);
+                _selectedPosition = position; 
             }
 
             _gameStatus = GameStatus.MoveRobot;

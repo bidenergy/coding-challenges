@@ -55,7 +55,7 @@ namespace RobotWars.Test
             Assert.That(result.SuccessMessage, Is.Null);
             Assert.That(result.FailureMessage, Is.Null);
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
-            Assert.That(_game.SelectedRobot, Is.EqualTo(new SelectedRobot { Column = 1, Row = 2, Heading = RobotHeading.North }));
+            Assert.That(_game.SelectedRobot, Is.EqualTo((Column: 1, Row: 2, Heading: RobotHeading.North)));
         }
     }
 }

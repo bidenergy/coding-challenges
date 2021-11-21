@@ -28,9 +28,20 @@ namespace Supermarket.Test
         }
 
         [Test]
+        public void UpsupportedProduct_MakesNoDiff()
+        {
+            _checkout.Scan("Z");
+
+            var price = _checkout.GetTotalPrice();
+
+            Assert.That(price, Is.EqualTo(0));
+        }
+
+        [Test]
         public void ScanOnce()
         {
             _checkout.Scan("A");
+
             var price = _checkout.GetTotalPrice();
 
             Assert.That(price, Is.EqualTo(50));
@@ -41,9 +52,12 @@ namespace Supermarket.Test
         {
             _checkout.Scan("A");
             _checkout.Scan("A");
+
             var price = _checkout.GetTotalPrice();
 
             Assert.That(price, Is.EqualTo(100));
         }
+
+
     }
 }

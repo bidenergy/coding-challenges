@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace RobotWars.Logic
+﻿namespace RobotWars.Logic.Parsing
 {
     public record InputResultArenaInit
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
         public string ParseErrorMessage { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }        
 
         internal static InputResultArenaInit Invalid(string message)
         {

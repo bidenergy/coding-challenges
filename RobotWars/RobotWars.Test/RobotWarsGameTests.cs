@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using RobotWars.Logic;
+using RobotWars.Logic.Parsing;
 
 namespace RobotWars.Test
 {
@@ -23,20 +24,6 @@ namespace RobotWars.Test
         }
 
         [Test]
-        public void Start_ValidInput_Initialized()
-        {
-            var result = _game.ProcessInstruction("5 4");
-
-            Assert.That(result.Successful, Is.True);
-            Assert.That(result.SuccessMessage, Is.Null);
-            Assert.That(result.FailureMessage, Is.Null);
-
-            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
-            Assert.That(_game.ArenaWidth, Is.EqualTo(5));
-            Assert.That(_game.ArenaHeight, Is.EqualTo(4));
-        }
-
-        [Test]
         public void Start_InvalidInput_NotInitialized()
         {
             var result = _game.ProcessInstruction("5");
@@ -47,6 +34,28 @@ namespace RobotWars.Test
             Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.Start));
             Assert.That(_game.ArenaWidth, Is.EqualTo(0));
             Assert.That(_game.ArenaHeight, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void PlaySampleInput_Works()
+        {
+            var result = _game.ProcessInstruction("5 4");
+
+            Assert.That(result.Successful, Is.True);
+            Assert.That(result.SuccessMessage, Is.Null);
+            Assert.That(result.FailureMessage, Is.Null);
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.AddOrSelectRobot));
+            Assert.That(_game.ArenaWidth, Is.EqualTo(5));
+            Assert.That(_game.ArenaHeight, Is.EqualTo(4));
+
+
+            result = _game.ProcessInstruction("1 2 N");
+
+            Assert.That(result.Successful, Is.True);
+            Assert.That(result.SuccessMessage, Is.Null);
+            Assert.That(result.FailureMessage, Is.Null);
+            Assert.That(_game.GameStatus, Is.EqualTo(GameStatus.MoveRobot));
+            Assert.That(_game.SelectedRobot, Is.EqualTo(new SelectedRobot { Column = 1, Row = 2, Heading = RobotHeading.North }));
         }
     }
 }

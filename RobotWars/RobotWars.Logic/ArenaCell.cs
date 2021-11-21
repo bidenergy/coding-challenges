@@ -1,6 +1,12 @@
 ﻿namespace RobotWars.Logic
 {
-    internal class ArenaCell
+    public class ArenaCell
     {
+        public RobotHeading? RobotHeading { get; private set; }
+
+        public ArenaCell(RobotHeading robotHeading)
+        {
+            RobotHeading = robotHeading;
+        }
     }
 }

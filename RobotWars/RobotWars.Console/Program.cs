@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RobotWars.Logic;
+using RobotWars.Logic.Parsing;
 
 namespace RobotWars.Console
 {

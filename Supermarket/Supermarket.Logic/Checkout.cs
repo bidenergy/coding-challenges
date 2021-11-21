@@ -1,18 +1,20 @@
 ﻿using Supermarket.Logic.Data;
+using Supermarket.Logic.Discount;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Supermarket.Logic
 {
     public class Checkout : ICheckout
     {
         private readonly IDataRepository _repo;
+        private readonly IDiscountCalculatorFactory _discountCalculatorFactory;
 
-        private Dictionary<string, CartItem> _cart = new Dictionary<string, CartItem>();
+        private readonly Dictionary<string, CartItem> _cart = new Dictionary<string, CartItem>();
 
-        public Checkout(IDataRepository repo)
+        public Checkout(IDataRepository repo, IDiscountCalculatorFactory discountCalculatorFactory)
         {
             _repo = repo;
+            _discountCalculatorFactory = discountCalculatorFactory;
         }
 
         public void Scan(string item)
@@ -35,8 +37,24 @@ namespace Supermarket.Logic
 
         public int GetTotalPrice()
         {
-            return _cart.Values
-                .Sum(ci => ci.Product.UnitPrice * ci.Quantity);
+            int totalPrice = 0;
+
+            foreach (var cartItem in _cart.Values)
+            {
+                var multiSpecial = _repo.GetMutiItemDiscount(cartItem.Product.Sku);
+
+                if (multiSpecial != null)
+                {
+                    var specialCalculator = _discountCalculatorFactory.CreateMultiItemDiscountCalculator(multiSpecial);
+                    totalPrice += specialCalculator.ComputeDiscountedPrice(cartItem.Quantity, cartItem.Product.UnitPrice);
+                }
+                else
+                {
+                    totalPrice += cartItem.Quantity * cartItem.Product.UnitPrice;
+                }
+            }
+
+            return totalPrice;
         }        
     }
 }

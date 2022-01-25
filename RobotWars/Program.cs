@@ -7,15 +7,18 @@ public class Program
 		Console.WriteLine("Code For Robot Wars Challenge");
 		
 		// Test Input is taken in string	
-		string testInput = "5 5\n1 2 N\nLMLMLMLMM\n3 3 E\nMMRMMRMRRM";
-		
+		string testInput = "5 5\n1 2 N\nLMLMLMLMM\n3 3 E\nMMRMMRMRRMM";
+		Console.WriteLine("\n***Input***");
+		Console.WriteLine(testInput);
+
 		// Splitting test input by new line and storing it in array
 		string[] inputArray = testInput.Split('\n');
 		
 		int upperX = Convert.ToInt32(inputArray[0].Split(' ')[0]);
 		int upperY = Convert.ToInt32(inputArray[0].Split(' ')[1]);
 				
-		
+		Console.WriteLine("\n***Output***");
+
 		// Logic to find the position of robots
 		for(int i = 1; i < inputArray.Length; i=i+2) {
 			
@@ -24,68 +27,64 @@ public class Program
 			int currentPositionX = Convert.ToInt32(position.Split(' ')[0]);
 			int currentPositionY = Convert.ToInt32(position.Split(' ')[1]);
 			string currentHeading = position.Split(' ')[2];
-			
-			int nextPositionX = currentPositionX;
-			int nextPositionY = currentPositionY;
-			string nextHeading = "";
-			
-			// nextPosition of robot is calculated based on current heading of the robot
-			if(currentHeading.Equals("N")) {
-				nextPositionX = currentPositionX;
-				nextPositionY = currentPositionY + 1;
-			} else if (currentHeading.Equals("E")) {
-				nextPositionX = currentPositionX + 1;
-				nextPositionY = currentPositionY;
-			} else if (currentHeading.Equals("S")) {
-				nextPositionX = currentPositionX;
-				nextPositionY = currentPositionY - 1;
-			} else if (currentHeading.Equals("W")) {
-				nextPositionX = currentPositionX - 1;
-				nextPositionY = currentPositionY;
-			}
-			
+
+
 			// Robot's position is stored in a variable
 			string instructions = inputArray[i+1];
-			Console.WriteLine(instructions);
-
 
 			// Looping through instruction to get the current position 
 			// and current heading of the robot
 			foreach(char c in instructions) {
-				if(c.Equals("L")) {
-					if (currentHeading.Equals("N")) nextHeading = "E";
-					else if(currentHeading.Equals("E")) nextHeading = "S";
-					else if(currentHeading.Equals("S")) nextHeading = "W";
-					else if(currentHeading.Equals("W")) nextHeading = "N";
-				} else if(c.Equals("R")) {
-					if (currentHeading.Equals("N")) nextHeading = "W";
-					else if(currentHeading.Equals("E")) nextHeading = "N";
-					else if(currentHeading.Equals("S")) nextHeading = "E";
-					else if(currentHeading.Equals("W")) nextHeading = "S";
-				} else if(c.Equals("M")) {
-					currentPositionX = nextPositionX;
-					currentPositionY = nextPositionY;
-					currentHeading = nextHeading;
+				if(c.Equals('L')) {
+					if (currentHeading.Equals("N")) {
+						currentHeading = "W";
+					}
+					else if(currentHeading.Equals("W")) {
+						currentHeading = "S";
+					}
+					else if(currentHeading.Equals("S")) {
+						currentHeading = "E";
+					}
+					else if(currentHeading.Equals("E")) {
+						currentHeading = "N";
+					}
+				} else if(c.Equals('R')) {
+					if (currentHeading.Equals("N")) {
+						currentHeading = "E";
+					}
+					else if(currentHeading.Equals("E")) {
+						currentHeading = "S";
+					}
+					else if(currentHeading.Equals("S")) {
+						currentHeading = "W"; 
+					}
+					else if(currentHeading.Equals("W")) {
+						currentHeading = "N";
+					}
+				} else if(c.Equals('M')) {
+					
+						if(currentHeading.Equals("N")) {
+							if (currentPositionY+1 <= upperY) currentPositionY = currentPositionY + 1;
+							else {Console.WriteLine("Robot out of arena, please give valid instrictions for this robot");return;}
+						}
+						else if(currentHeading.Equals("E")) { 
+							if(currentPositionX+1 <= upperX) currentPositionX = currentPositionX + 1;
+							else {Console.WriteLine("Robot out of arena, please give valid instrictions");return;}
+						}
+						else if(currentHeading.Equals("S")) {
+							if(currentPositionY-1 >=0) currentPositionY = currentPositionY - 1;
+							else {Console.WriteLine("Robot out of arena, please give valid instrictions");return;}
+						}
+						else if(currentHeading.Equals("W")) {
+							if(currentPositionX-1 >= 0) currentPositionX = currentPositionX - 1;
+							else {Console.WriteLine("Robot out of arena, please give valid instrictions");return;}
+						}	
+					}
 				}
-			}
 			
 			// Displaying output (current position of the robot)
 			Console.WriteLine(currentPositionX + " " + currentPositionY + " " + currentHeading);
 		}
-	}
-		
-		
-		// Method that returns heading of the robot based on current position and next position
-		string getHeading(int currentPositionX, int currentPositionY, int nextPositionX, int nextPositionY) {
-			string heading = "";
-			
-			if(currentPositionY == nextPositionY+1) heading = "N";
-			else if(currentPositionX == nextPositionX+1) heading = "E";
-			else if(currentPositionY == nextPositionY-1) heading = "S";
-			else if(currentPositionX == nextPositionX-1) heading = "W";
-			
-			return heading;
-		}	
-		
-	}
+	}	
+}
 

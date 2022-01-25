@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 public class Program
 {
@@ -15,9 +14,7 @@ public class Program
 		
 		int upperX = Convert.ToInt32(inputArray[0].Split(' ')[0]);
 		int upperY = Convert.ToInt32(inputArray[0].Split(' ')[1]);
-		
-		List<String> output = new List<String>();
-		
+				
 		
 		// Logic to find the position of robots
 		for(int i = 1; i < inputArray.Length; i=i+2) {
@@ -28,8 +25,9 @@ public class Program
 			int currentPositionY = Convert.ToInt32(position.Split(' ')[1]);
 			string currentHeading = position.Split(' ')[2];
 			
-			int nextPositionX, nextPositionY;
-			string nextHeading;
+			int nextPositionX = currentPositionX;
+			int nextPositionY = currentPositionY;
+			string nextHeading = "";
 			
 			// nextPosition of robot is calculated based on current heading of the robot
 			if(currentHeading.Equals("N")) {
@@ -48,7 +46,34 @@ public class Program
 			
 			// Robot's position is stored in a variable
 			string instructions = inputArray[i+1];
+			Console.WriteLine(instructions);
+
+
+			// Looping through instruction to get the current position 
+			// and current heading of the robot
+			foreach(char c in instructions) {
+				if(c.Equals("L")) {
+					if (currentHeading.Equals("N")) nextHeading = "E";
+					else if(currentHeading.Equals("E")) nextHeading = "S";
+					else if(currentHeading.Equals("S")) nextHeading = "W";
+					else if(currentHeading.Equals("W")) nextHeading = "N";
+				} else if(c.Equals("R")) {
+					if (currentHeading.Equals("N")) nextHeading = "W";
+					else if(currentHeading.Equals("E")) nextHeading = "N";
+					else if(currentHeading.Equals("S")) nextHeading = "E";
+					else if(currentHeading.Equals("W")) nextHeading = "S";
+				} else if(c.Equals("M")) {
+					currentPositionX = nextPositionX;
+					currentPositionY = nextPositionY;
+					currentHeading = nextHeading;
+				}
+			}
+			
+			// Displaying output (current position of the robot)
+			Console.WriteLine(currentPositionX + " " + currentPositionY + " " + currentHeading);
 		}
+	}
+		
 		
 		// Method that returns heading of the robot based on current position and next position
 		string getHeading(int currentPositionX, int currentPositionY, int nextPositionX, int nextPositionY) {
@@ -63,4 +88,4 @@ public class Program
 		}	
 		
 	}
-}
+
